@@ -3,7 +3,6 @@ package guru.qa.country.controller;
 import guru.qa.country.controller.dto.CountryDto;
 import guru.qa.country.service.CountryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/country")
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor
 public class CountryController {
 
     private final CountryService countryService;
