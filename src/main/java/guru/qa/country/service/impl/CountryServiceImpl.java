@@ -1,6 +1,8 @@
 package guru.qa.country.service.impl;
 
-import guru.qa.country.controller.dto.CountryDto;
+import guru.qa.country.domain.graphql.GqlCountryDetails;
+import guru.qa.country.domain.graphql.GqlCountryInput;
+import guru.qa.country.domain.rest.CountryDto;
 import guru.qa.country.repository.CountryRepository;
 import guru.qa.country.repository.entity.CountryEntity;
 import guru.qa.country.service.CountryService;
@@ -51,5 +53,40 @@ public class CountryServiceImpl implements CountryService {
         updatedEntity.setCode(country.getCode());
         updatedEntity.setName(country.getName());
         return CountryDto.fromEntity(countryRepository.save(updatedEntity));
+    }
+
+    @Override
+    public List<GqlCountryDetails> getCountries() {
+        return countryRepository.findAll().stream()
+                .map(GqlCountryDetails::fromEntity)
+                .toList();
+    }
+
+    @Override
+    public GqlCountryDetails addCountry(GqlCountryInput input) {
+        Optional<CountryEntity> foundEntity = countryRepository.findByCode(input.getCode());
+
+        if (foundEntity.isPresent()) {
+            throw new EntityExistsException("Country with code %s already exists".formatted(input.getCode()));
+        }
+        var newEntity = CountryEntity.builder()
+                .code(input.getCode())
+                .name(input.getName())
+                .build();
+        countryRepository.save(newEntity);
+        return GqlCountryDetails.fromEntity(newEntity);
+    }
+
+    @Override
+    public GqlCountryDetails updateCountry(String code, GqlCountryInput input) {
+        Optional<CountryEntity> foundEntity = countryRepository.findByCode(code);
+
+        if (foundEntity.isEmpty()) {
+            throw new EntityNotFoundException("Country with code %s not found".formatted(input.getCode()));
+        }
+        CountryEntity updatedEntity = foundEntity.get();
+        updatedEntity.setCode(input.getCode());
+        updatedEntity.setName(input.getName());
+        return GqlCountryDetails.fromEntity(countryRepository.save(updatedEntity));
     }
 }
