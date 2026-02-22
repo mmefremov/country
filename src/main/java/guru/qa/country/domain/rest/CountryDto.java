@@ -1,4 +1,4 @@
-package guru.qa.country.controller.dto;
+package guru.qa.country.domain.rest;
 
 import guru.qa.country.repository.entity.CountryEntity;
 import lombok.Builder;

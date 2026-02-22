@@ -1,6 +1,6 @@
 package guru.qa.country.service;
 
-import guru.qa.country.controller.dto.CountryDto;
+import guru.qa.country.domain.rest.CountryDto;
 
 import java.util.List;
 

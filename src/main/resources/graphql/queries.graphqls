@@ -1,0 +1,18 @@
+type Query {
+    getAllCountries: [GqlCountryDetails!]!
+}
+
+type Mutation {
+    addCountry(input: GqlCountryInput!): GqlCountryDetails!
+    updateCountry(code: String!, input: GqlCountryInput!): GqlCountryDetails!
+}
+
+type GqlCountryDetails {
+    name: String!
+    code: String!
+}
+
+input GqlCountryInput {
+    name: String!
+    code: String!
+}

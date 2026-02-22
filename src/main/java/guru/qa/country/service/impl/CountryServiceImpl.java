@@ -1,6 +1,6 @@
 package guru.qa.country.service.impl;
 
-import guru.qa.country.controller.dto.CountryDto;
+import guru.qa.country.domain.rest.CountryDto;
 import guru.qa.country.repository.CountryRepository;
 import guru.qa.country.repository.entity.CountryEntity;
 import guru.qa.country.service.CountryService;
