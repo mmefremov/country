@@ -1,6 +1,6 @@
 package guru.qa.country.domain.graphql;
 
-import guru.qa.country.repository.entity.CountryEntity;
+import guru.qa.country.domain.rest.CountryDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,10 +12,10 @@ public class GqlCountryDetails {
 
     private String name;
 
-    public static GqlCountryDetails fromEntity(CountryEntity entity) {
+    public static GqlCountryDetails fromDto(CountryDto dto) {
         return GqlCountryDetails.builder()
-                .name(entity.getName())
-                .code(entity.getCode())
+                .name(dto.getName())
+                .code(dto.getCode())
                 .build();
     }
 }

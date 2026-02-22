@@ -19,17 +19,19 @@ public class CountryGraphQlController {
 
     @QueryMapping
     public List<GqlCountryDetails> getAllCountries() {
-        return countryService.getCountries();
+        return countryService.getAllCountries().stream()
+                .map(GqlCountryDetails::fromDto)
+                .toList();
     }
 
     @MutationMapping
     public GqlCountryDetails addCountry(@Argument GqlCountryInput input) {
-        return countryService.addCountry(input);
+        return GqlCountryDetails.fromDto(countryService.addCountry(input.toDto()));
     }
 
     @MutationMapping
     public GqlCountryDetails updateCountry(@Argument String code,
                                            @Argument GqlCountryInput input) {
-        return countryService.updateCountry(code, input);
+        return GqlCountryDetails.fromDto(countryService.updateCountry(code, input.toDto()));
     }
 }
