@@ -1,4 +1,4 @@
-package guru.qa.country.service.impl;
+package guru.qa.country.service;
 
 import com.google.protobuf.Empty;
 import guru.qa.country.grpc.Count;
@@ -8,9 +8,8 @@ import guru.qa.country.grpc.CountryServiceGrpc;
 import guru.qa.country.grpc.UpdateCountryRequest;
 import guru.qa.country.repository.CountryRepository;
 import guru.qa.country.repository.entity.CountryEntity;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CountryGrpcServiceImpl extends CountryServiceGrpc.CountryServiceImplBase {
+public class CountryGrpcService extends CountryServiceGrpc.CountryServiceImplBase {
 
     private final CountryRepository countryRepository;
 
@@ -28,7 +27,7 @@ public class CountryGrpcServiceImpl extends CountryServiceGrpc.CountryServiceImp
                 CountryDetailsList.newBuilder()
                         .addAllDetails(
                                 countryRepository.findAll().stream()
-                                        .map(CountryGrpcServiceImpl::mapCountryEntityToProto)
+                                        .map(CountryGrpcService::mapCountryEntityToProto)
                                         .toList())
                         .build());
         responseObserver.onCompleted();
@@ -39,7 +38,10 @@ public class CountryGrpcServiceImpl extends CountryServiceGrpc.CountryServiceImp
         Optional<CountryEntity> foundEntity = countryRepository.findByCode(request.getCode());
 
         if (foundEntity.isPresent()) {
-            throw new EntityExistsException("Country with code %s already exists".formatted(request.getCode()));
+            responseObserver.onError(
+                    Status.ALREADY_EXISTS
+                            .withDescription("Country with code %s already exists".formatted(request.getCode()))
+                            .asException());
         }
         responseObserver.onNext(
                 mapCountryEntityToProto(
@@ -56,15 +58,17 @@ public class CountryGrpcServiceImpl extends CountryServiceGrpc.CountryServiceImp
         Optional<CountryEntity> foundEntity = countryRepository.findByCode(request.getCode());
 
         if (foundEntity.isEmpty()) {
-            throw new EntityNotFoundException("Country with code %s not found".formatted(request.getCode()));
+            responseObserver.onError(
+                    Status.NOT_FOUND
+                            .withDescription("Country with code %s not found".formatted(request.getCode()))
+                            .asException());
         }
         CountryEntity updatedEntity = foundEntity.get();
         updatedEntity.setCode(request.getDetails().getCode());
         updatedEntity.setName(request.getDetails().getName());
-        CountryEntity save = countryRepository.save(updatedEntity);
         responseObserver.onNext(
                 mapCountryEntityToProto(
-                        save)
+                        countryRepository.save(updatedEntity))
         );
         responseObserver.onCompleted();
     }
@@ -80,7 +84,10 @@ public class CountryGrpcServiceImpl extends CountryServiceGrpc.CountryServiceImp
                 Optional<CountryEntity> foundEntity = countryRepository.findByCode(country.getCode());
 
                 if (foundEntity.isPresent()) {
-                    throw new EntityExistsException("Country with code %s already exists".formatted(country.getCode()));
+                    responseObserver.onError(
+                            Status.ALREADY_EXISTS
+                                    .withDescription("Country with code %s already exists".formatted(country.getCode()))
+                                    .asException());
                 }
                 count++;
                 countryRepository.save(
