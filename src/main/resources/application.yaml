@@ -10,7 +10,7 @@ spring:
   datasource:
     url: 'jdbc:postgresql://localhost:5432/country'
     username: postgres
-    password: postgres
+    password: secret
     hikari:
       connection-timeout: 20000
       minimum-idle: 10

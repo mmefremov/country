@@ -13,7 +13,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-public class CountryController {
+public class CountryGraphQlController {
 
     private final CountryService countryService;
 
