@@ -7,6 +7,10 @@ spring:
   graphql:
     graphiql:
       enabled: true
+  grpc:
+    server:
+      servlet:
+        enabled: false
   datasource:
     url: 'jdbc:postgresql://localhost:5432/country'
     username: postgres
