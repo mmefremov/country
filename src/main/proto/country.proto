@@ -9,10 +9,15 @@ option java_package = "guru.qa.country.grpc";
 option java_outer_classname = "CountryProto";
 
 service CountryService {
+  rpc GetCountry (CountryCode) returns (CountryDetails) {}
   rpc ListCountries (google.protobuf.Empty) returns (CountryDetailsList) {}
   rpc CreateCountry (CountryDetails) returns (CountryDetails) {}
   rpc UpdateCountry (UpdateCountryRequest) returns (CountryDetails) {}
   rpc CreateCountryStream(stream CountryDetails) returns (Count) {}
+}
+
+message CountryCode {
+  string code = 1;
 }
 
 message CountryDetailsList {

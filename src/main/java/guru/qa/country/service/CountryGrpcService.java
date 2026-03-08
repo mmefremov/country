@@ -2,6 +2,7 @@ package guru.qa.country.service;
 
 import com.google.protobuf.Empty;
 import guru.qa.country.grpc.Count;
+import guru.qa.country.grpc.CountryCode;
 import guru.qa.country.grpc.CountryDetails;
 import guru.qa.country.grpc.CountryDetailsList;
 import guru.qa.country.grpc.CountryServiceGrpc;
@@ -20,6 +21,23 @@ import java.util.Optional;
 public class CountryGrpcService extends CountryServiceGrpc.CountryServiceImplBase {
 
     private final CountryRepository countryRepository;
+
+    @Override
+    public void getCountry(CountryCode request, StreamObserver<CountryDetails> responseObserver) {
+        Optional<CountryEntity> foundEntity = countryRepository.findByCode(request.getCode());
+
+        if (foundEntity.isEmpty()) {
+            responseObserver.onError(
+                    Status.NOT_FOUND
+                            .withDescription("Country with code %s not found".formatted(request.getCode()))
+                            .asException());
+        }
+        responseObserver.onNext(
+                mapCountryEntityToProto(
+                        foundEntity.get())
+        );
+        responseObserver.onCompleted();
+    }
 
     @Override
     public void listCountries(Empty request, StreamObserver<CountryDetailsList> responseObserver) {
